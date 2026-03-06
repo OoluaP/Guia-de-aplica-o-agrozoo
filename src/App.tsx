@@ -5,13 +5,12 @@
 
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { 
-  Droplets, 
-  ChevronRight, 
-  ChevronLeft, 
-  CheckCircle2, 
-  AlertTriangle, 
-  Info, 
+import {
+  Droplets,
+  ChevronRight,
+  CheckCircle2,
+  AlertTriangle,
+  Info,
   RotateCcw,
   FlaskConical,
   Truck,
@@ -20,11 +19,11 @@ import {
 } from 'lucide-react';
 import { KitType, AppMode, FLOW_RATES, KIT_PRODUCTS, Product } from './constants';
 
-type Step = 
-  | 'HOME' 
-  | 'SELECT_KIT' 
-  | 'SELECT_MODE' 
-  | 'WATER_QUALITY_INFO' 
+type Step =
+  | 'HOME'
+  | 'SELECT_KIT'
+  | 'SELECT_MODE'
+  | 'WATER_QUALITY_INFO'
   | 'JAR_TEST_START'
   | 'JAR_TEST_MIXING'
   | 'JAR_TEST_FINAL_WATER'
@@ -42,13 +41,13 @@ export default function App() {
   const [customVolume, setCustomVolume] = useState<string>('');
   const [mixingIndex, setMixingIndex] = useState(0);
   const [isJarTest, setIsJarTest] = useState(false);
-  const [timerSeconds, setTimerSeconds] = useState(300); // 5 minutes
+  const [timerSeconds, setTimerSeconds] = useState(300); // 5 minutos
   const [isTimerRunning, setIsTimerRunning] = useState(false);
 
-  // Constants for Jar Test
+  // Constantes do teste de jarra
   const JAR_TEST_HECTARES = 0.3;
 
-  // Timer logic
+  // Lógica do cronômetro
   React.useEffect(() => {
     let interval: NodeJS.Timeout;
     if (isTimerRunning && timerSeconds > 0) {
@@ -97,12 +96,12 @@ export default function App() {
     return effectiveTankVolume / flowRate;
   }, [effectiveTankVolume, flowRate]);
 
-  // Jar Test Volumes
+  // Volumes do teste de jarra
   const jarTestWaterTotal = waterVolumePerHa * JAR_TEST_HECTARES;
   const jarTestWaterInitial = jarTestWaterTotal * 0.6;
   const jarTestWaterFinal = jarTestWaterTotal * 0.4;
 
-  // Full Tank Volumes
+  // Volumes do tanque completo
   const fullTankWaterTotal = waterVolumePerHa * hectaresPerTank;
   const fullTankWaterInitial = fullTankWaterTotal * 0.6;
   const fullTankWaterFinal = fullTankWaterTotal * 0.4;
@@ -128,44 +127,36 @@ export default function App() {
       } else {
         setStep('TANK_VOLUME');
       }
-    }
-    else if (step === 'WATER_QUALITY_INFO') {
+    } else if (step === 'WATER_QUALITY_INFO') {
       setIsJarTest(true);
       setStep('JAR_TEST_START');
-    }
-    else if (step === 'JAR_TEST_START') {
+    } else if (step === 'JAR_TEST_START') {
       setMixingIndex(0);
       setStep('JAR_TEST_MIXING');
-    }
-    else if (step === 'JAR_TEST_MIXING') {
+    } else if (step === 'JAR_TEST_MIXING') {
       if (mixingIndex < products.length - 1) {
         setMixingIndex(mixingIndex + 1);
       } else {
         setStep('JAR_TEST_FINAL_WATER');
       }
-    }
-    else if (step === 'JAR_TEST_FINAL_WATER') {
+    } else if (step === 'JAR_TEST_FINAL_WATER') {
       setStep('STABILITY_CHECK');
       setTimerSeconds(300);
       setIsTimerRunning(true);
-    }
-    else if (step === 'STABILITY_CHECK') {
+    } else if (step === 'STABILITY_CHECK') {
       setStep('TANK_VOLUME');
       setIsTimerRunning(false);
-    }
-    else if (step === 'TANK_VOLUME') {
+    } else if (step === 'TANK_VOLUME') {
       setIsJarTest(false);
       setMixingIndex(0);
       setStep('FULL_TANK_MIXING');
-    }
-    else if (step === 'FULL_TANK_MIXING') {
+    } else if (step === 'FULL_TANK_MIXING') {
       if (mixingIndex < products.length - 1) {
         setMixingIndex(mixingIndex + 1);
       } else {
         setStep('FULL_TANK_FINAL_WATER');
       }
-    }
-    else if (step === 'FULL_TANK_FINAL_WATER') {
+    } else if (step === 'FULL_TANK_FINAL_WATER') {
       setStep('FINAL');
     }
   };
@@ -178,24 +169,22 @@ export default function App() {
     else if (step === 'JAR_TEST_MIXING') {
       if (mixingIndex > 0) setMixingIndex(mixingIndex - 1);
       else setStep('JAR_TEST_START');
-    }
-    else if (step === 'JAR_TEST_FINAL_WATER') {
+    } else if (step === 'JAR_TEST_FINAL_WATER') {
       setMixingIndex(products.length - 1);
       setStep('JAR_TEST_MIXING');
-    }
-    else if (step === 'STABILITY_CHECK') setStep('JAR_TEST_FINAL_WATER');
-    else if (step === 'TANK_VOLUME') {
+    } else if (step === 'STABILITY_CHECK') {
+      setStep('JAR_TEST_FINAL_WATER');
+      setIsTimerRunning(false);
+    } else if (step === 'TANK_VOLUME') {
       if (selectedMode === AppMode.DRONE || selectedMode === AppMode.AVIAO) {
         setStep('STABILITY_CHECK');
       } else {
         setStep('SELECT_MODE');
       }
-    }
-    else if (step === 'FULL_TANK_MIXING') {
+    } else if (step === 'FULL_TANK_MIXING') {
       if (mixingIndex > 0) setMixingIndex(mixingIndex - 1);
       else setStep('TANK_VOLUME');
-    }
-    else if (step === 'FULL_TANK_FINAL_WATER') {
+    } else if (step === 'FULL_TANK_FINAL_WATER') {
       setMixingIndex(products.length - 1);
       setStep('FULL_TANK_MIXING');
     }
@@ -204,81 +193,92 @@ export default function App() {
   const renderHeader = (title: string, subtitle?: string) => (
     <div className="mb-8 text-center">
       <h1 className="text-3xl font-bold text-emerald-900 tracking-tight">{title}</h1>
-      {subtitle && <p className="text-emerald-700 mt-2 font-medium">{subtitle}</p>}
+      {subtitle && <p className="mt-2 font-medium text-emerald-700">{subtitle}</p>}
     </div>
   );
 
-  const formatVolume = (val: number, unit: string = "L") => {
-    if (unit === "kg") {
+  const formatVolume = (val: number, unit: string = 'L') => {
+    if (unit === 'kg') {
       if (val < 1) return `${(val * 1000).toFixed(0)} g`;
       return `${val.toFixed(2)} kg`;
     }
-    if (val < 1) return `${(val * 1000).toFixed(0)} ml`;
+    if (val < 1) return `${(val * 1000).toFixed(0)} mL`;
     return `${val.toFixed(2)} L`;
   };
 
   return (
-    <div className="min-h-screen bg-emerald-50 text-emerald-950 font-sans selection:bg-emerald-200">
-      <div className="max-w-md mx-auto px-4 py-8 min-h-screen flex flex-col">
-        
+    <div
+      translate="no"
+      className="min-h-screen bg-emerald-50 text-emerald-950 font-sans selection:bg-emerald-200"
+    >
+      <div className="mx-auto flex min-h-screen max-w-md flex-col px-4 py-8">
         <AnimatePresence mode="wait">
           {step === 'HOME' && (
-            <motion.div 
+            <motion.div
               key="home"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="flex-1 flex flex-col items-center justify-center text-center"
+              className="flex flex-1 flex-col items-center justify-center text-center"
             >
-              <div className="w-24 h-24 bg-emerald-600 rounded-3xl flex items-center justify-center mb-6 shadow-xl shadow-emerald-200">
-                <Droplets className="text-white w-12 h-12" />
+              <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-3xl bg-emerald-600 shadow-xl shadow-emerald-200">
+                <Droplets className="h-12 w-12 text-white" />
               </div>
-              <h1 className="text-4xl font-black text-emerald-900 mb-4 leading-tight">
-                Guia de Aplicação<br/>AGROZOO
+
+              <h1 className="mb-4 text-4xl font-black leading-tight text-emerald-900">
+                Guia de Aplicação
+                <br />
+                AGROZOO
               </h1>
-              <p className="text-emerald-700 mb-12 text-lg font-medium">
+
+              <p className="mb-12 text-lg font-medium text-emerald-700">
                 Orientação técnica para preparo de calda e aplicação de herbicidas.
               </p>
-              <button 
+
+              <button
                 onClick={nextStep}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-5 rounded-2xl shadow-lg shadow-emerald-200 transition-all active:scale-95 flex items-center justify-center gap-3 text-xl"
+                className="flex w-full items-center justify-center gap-3 rounded-2xl bg-emerald-600 py-5 text-xl font-bold text-white shadow-lg shadow-emerald-200 transition-all active:scale-95 hover:bg-emerald-700"
               >
-                Iniciar Aplicação
-                <ChevronRight className="w-6 h-6" />
+                Iniciar aplicação
+                <ChevronRight className="h-6 w-6" />
               </button>
             </motion.div>
           )}
 
           {step === 'SELECT_KIT' && (
-            <motion.div 
+            <motion.div
               key="select-kit"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
               className="flex-1"
             >
-              {renderHeader("Selecione o Kit", "Escolha o tratamento desejado")}
+              {renderHeader('Selecione o kit', 'Escolha o tratamento desejado')}
+
               <div className="grid gap-4">
                 {Object.values(KitType).map((kit) => (
                   <button
                     key={kit}
                     onClick={() => setSelectedKit(kit)}
-                    className={`w-full p-5 rounded-2xl text-left font-bold transition-all border-2 ${
-                      selectedKit === kit 
-                        ? 'bg-emerald-600 border-emerald-600 text-white shadow-lg' 
-                        : 'bg-white border-emerald-100 text-emerald-900 hover:border-emerald-300'
+                    className={`w-full rounded-2xl border-2 p-5 text-left font-bold transition-all ${
+                      selectedKit === kit
+                        ? 'border-emerald-600 bg-emerald-600 text-white shadow-lg'
+                        : 'border-emerald-100 bg-white text-emerald-900 hover:border-emerald-300'
                     }`}
                   >
                     {kit}
                   </button>
                 ))}
               </div>
+
               <div className="mt-8 flex gap-4">
-                <button onClick={prevStep} className="flex-1 py-4 font-bold text-emerald-700">Voltar</button>
-                <button 
+                <button onClick={prevStep} className="flex-1 py-4 font-bold text-emerald-700">
+                  Voltar
+                </button>
+                <button
                   disabled={!selectedKit}
                   onClick={nextStep}
-                  className="flex-[2] bg-emerald-600 disabled:opacity-50 text-white font-bold py-4 rounded-xl shadow-md"
+                  className="flex-[2] rounded-xl bg-emerald-600 py-4 font-bold text-white shadow-md disabled:opacity-50"
                 >
                   Continuar
                 </button>
@@ -287,45 +287,64 @@ export default function App() {
           )}
 
           {step === 'SELECT_MODE' && (
-            <motion.div 
+            <motion.div
               key="select-mode"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
               className="flex-1"
             >
-              {renderHeader("Modo de Aplicação", "Como será feita a pulverização?")}
+              {renderHeader('Modo de aplicação', 'Como a pulverização será feita?')}
+
               <div className="grid gap-4">
                 {[
-                  { mode: AppMode.DRONE, icon: Cpu, desc: "Vazão: 30 L/ha" },
-                  { mode: AppMode.TERRESTRE, icon: Truck, desc: "Vazão: 200 L/ha" },
-                  { mode: AppMode.AVIAO, icon: Plane, desc: "Vazão: 50 L/ha" },
+                  { mode: AppMode.DRONE, icon: Cpu, desc: 'Vazão: 30 L/ha' },
+                  { mode: AppMode.TERRESTRE, icon: Truck, desc: 'Vazão: 200 L/ha' },
+                  { mode: AppMode.AVIAO, icon: Plane, desc: 'Vazão: 50 L/ha' }
                 ].map(({ mode, icon: Icon, desc }) => (
                   <button
                     key={mode}
                     onClick={() => setSelectedMode(mode)}
-                    className={`w-full p-6 rounded-2xl text-left transition-all border-2 flex items-center gap-4 ${
-                      selectedMode === mode 
-                        ? 'bg-emerald-600 border-emerald-600 text-white shadow-lg' 
-                        : 'bg-white border-emerald-100 text-emerald-900 hover:border-emerald-300'
+                    className={`flex w-full items-center gap-4 rounded-2xl border-2 p-6 text-left transition-all ${
+                      selectedMode === mode
+                        ? 'border-emerald-600 bg-emerald-600 text-white shadow-lg'
+                        : 'border-emerald-100 bg-white text-emerald-900 hover:border-emerald-300'
                     }`}
                   >
-                    <div className={`p-3 rounded-xl ${selectedMode === mode ? 'bg-emerald-500' : 'bg-emerald-50'}`}>
-                      <Icon className={`w-6 h-6 ${selectedMode === mode ? 'text-white' : 'text-emerald-600'}`} />
+                    <div
+                      className={`rounded-xl p-3 ${
+                        selectedMode === mode ? 'bg-emerald-500' : 'bg-emerald-50'
+                      }`}
+                    >
+                      <Icon
+                        className={`h-6 w-6 ${
+                          selectedMode === mode ? 'text-white' : 'text-emerald-600'
+                        }`}
+                      />
                     </div>
+
                     <div>
-                      <div className="font-bold text-lg">{mode}</div>
-                      <div className={`text-sm ${selectedMode === mode ? 'text-emerald-100' : 'text-emerald-600'}`}>{desc}</div>
+                      <div className="text-lg font-bold">{mode}</div>
+                      <div
+                        className={`text-sm ${
+                          selectedMode === mode ? 'text-emerald-100' : 'text-emerald-600'
+                        }`}
+                      >
+                        {desc}
+                      </div>
                     </div>
                   </button>
                 ))}
               </div>
+
               <div className="mt-8 flex gap-4">
-                <button onClick={prevStep} className="flex-1 py-4 font-bold text-emerald-700">Voltar</button>
-                <button 
+                <button onClick={prevStep} className="flex-1 py-4 font-bold text-emerald-700">
+                  Voltar
+                </button>
+                <button
                   disabled={!selectedMode}
                   onClick={nextStep}
-                  className="flex-[2] bg-emerald-600 disabled:opacity-50 text-white font-bold py-4 rounded-xl shadow-md"
+                  className="flex-[2] rounded-xl bg-emerald-600 py-4 font-bold text-white shadow-md disabled:opacity-50"
                 >
                   Iniciar
                 </button>
@@ -334,100 +353,148 @@ export default function App() {
           )}
 
           {step === 'WATER_QUALITY_INFO' && (
-            <motion.div 
+            <motion.div
               key="water-info"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 1.05 }}
-              className="flex-1 flex flex-col"
+              className="flex flex-1 flex-col"
             >
-              <div className="bg-white p-8 rounded-3xl shadow-xl border border-emerald-100 flex-1">
-                <div className="w-16 h-16 bg-amber-100 rounded-2xl flex items-center justify-center mb-6">
-                  <Info className="text-amber-600 w-8 h-8" />
+              <div className="flex-1 rounded-3xl border border-emerald-100 bg-white p-8 shadow-xl">
+                <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-100">
+                  <Info className="h-8 w-8 text-amber-600" />
                 </div>
-                <h2 className="text-2xl font-bold text-emerald-900 mb-4">Qualidade da Água</h2>
-                <div className="space-y-4 text-emerald-800 leading-relaxed font-medium">
-                  <p>Antes de iniciar a mistura, é importante verificar a qualidade da água.</p>
-                  <p>Em muitas regiões do Brasil, como Mato Grosso, Pará e Minas Gerais, as águas possuem alta concentração de minerais como ferro, cálcio e magnésio.</p>
-                  <p>Esses minerais podem causar instabilidade na calda, reduzindo a eficiência da aplicação.</p>
-                  <p className="bg-emerald-50 p-4 rounded-xl border border-emerald-100 text-emerald-900 font-bold">
-                    Por isso recomendamos realizar um teste de jarra (teste de balde) antes de preparar o tanque completo.
+
+                <h2 className="mb-4 text-2xl font-bold text-emerald-900">Qualidade da água</h2>
+
+                <div className="space-y-4 font-medium leading-relaxed text-emerald-800">
+                  <p>
+                    Antes de iniciar a mistura, é importante verificar a qualidade da água.
+                  </p>
+                  <p>
+                    Em muitas regiões do Brasil, como Mato Grosso, Pará e Minas Gerais, a água
+                    pode apresentar alta concentração de minerais, como ferro, cálcio e magnésio.
+                  </p>
+                  <p>
+                    Esses minerais podem causar instabilidade na calda, reduzindo a eficiência da
+                    aplicação.
+                  </p>
+                  <p className="rounded-xl border border-emerald-100 bg-emerald-50 p-4 font-bold text-emerald-900">
+                    Por isso, recomendamos realizar um teste de jarra (teste de balde) antes de
+                    preparar o tanque completo.
                   </p>
                 </div>
               </div>
+
               <div className="mt-8 flex gap-4">
-                <button onClick={prevStep} className="flex-1 py-4 font-bold text-emerald-700">Voltar</button>
-                <button 
+                <button onClick={prevStep} className="flex-1 py-4 font-bold text-emerald-700">
+                  Voltar
+                </button>
+                <button
                   onClick={nextStep}
-                  className="flex-[2] bg-emerald-600 text-white font-bold py-4 rounded-xl shadow-md"
+                  className="flex-[2] rounded-xl bg-emerald-600 py-4 font-bold text-white shadow-md"
                 >
-                  Iniciar Teste
+                  Iniciar teste
                 </button>
               </div>
             </motion.div>
           )}
 
           {step === 'JAR_TEST_START' && (
-            <motion.div 
+            <motion.div
               key="jar-start"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               className="flex-1"
             >
-              {renderHeader("Teste de Jarra", "Dose proporcional para 0,3 hectare")}
-              <div className="bg-white p-8 rounded-3xl shadow-lg border border-emerald-100 mb-8">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
-                    <FlaskConical className="text-emerald-600 w-6 h-6" />
+              {renderHeader('Teste de jarra', 'Dose proporcional para 0,3 hectare')}
+
+              <div className="mb-8 rounded-3xl border border-emerald-100 bg-white p-8 shadow-lg">
+                <div className="mb-6 flex items-center gap-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100">
+                    <FlaskConical className="h-6 w-6 text-emerald-600" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg">Passo 1</h3>
-                    <p className="text-emerald-600 text-sm">Preparação Inicial</p>
+                    <h3 className="text-lg font-bold">Passo 1</h3>
+                    <p className="text-sm text-emerald-600">Preparação inicial</p>
                   </div>
                 </div>
-                <p className="text-xl font-bold text-emerald-900 mb-4">
+
+                <p className="mb-4 text-xl font-bold text-emerald-900">
                   Adicione {formatVolume(jarTestWaterInitial)} de água.
                 </p>
-                <p className="text-emerald-700 font-medium">
-                  (60% do volume de água total do teste).
+
+                <p className="font-medium text-emerald-700">
+                  (60% do volume total de água do teste).
                 </p>
-                <div className="mt-6 flex items-center gap-3 text-amber-600 bg-amber-50 p-4 rounded-xl border border-amber-100">
-                  <AlertTriangle className="w-5 h-5 flex-shrink-0" />
-                  <p className="font-bold text-sm">Mantenha agitação constante.</p>
+
+                <div className="mt-6 flex items-center gap-3 rounded-xl border border-amber-100 bg-amber-50 p-4 text-amber-600">
+                  <AlertTriangle className="h-5 w-5 flex-shrink-0" />
+                  <p className="text-sm font-bold">Mantenha a agitação constante.</p>
                 </div>
               </div>
+
               <div className="flex gap-4">
-                <button onClick={prevStep} className="flex-1 py-4 font-bold text-emerald-700">Voltar</button>
-                <button onClick={nextStep} className="flex-[2] bg-emerald-600 text-white font-bold py-4 rounded-xl shadow-md">Próximo</button>
+                <button onClick={prevStep} className="flex-1 py-4 font-bold text-emerald-700">
+                  Voltar
+                </button>
+                <button
+                  onClick={nextStep}
+                  className="flex-[2] rounded-xl bg-emerald-600 py-4 font-bold text-white shadow-md"
+                >
+                  Próximo
+                </button>
               </div>
             </motion.div>
           )}
 
           {step === 'JAR_TEST_MIXING' && (
-            <motion.div 
+            <motion.div
               key={`jar-mix-${mixingIndex}`}
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               className="flex-1"
             >
-              {renderHeader("Ordem de Mistura", `Produto ${mixingIndex + 1} de ${products.length}`)}
-              <div className="bg-white p-8 rounded-3xl shadow-lg border border-emerald-100 mb-8">
-                <div className="text-emerald-600 font-bold mb-2 uppercase tracking-wider text-xs">Adicione agora:</div>
-                <h2 className="text-3xl font-black text-emerald-900 mb-4">{products[mixingIndex].name}</h2>
-                <div className="bg-emerald-50 p-6 rounded-2xl border-2 border-emerald-100 mb-6">
-                  <div className="text-emerald-600 text-sm font-bold mb-1">Dose para o teste (0,3 ha):</div>
-                  <div className="text-4xl font-black text-emerald-600">
-                    {formatVolume(products[mixingIndex].dosePerHa * JAR_TEST_HECTARES, products[mixingIndex].unit)}
+              {renderHeader('Ordem de mistura', `Produto ${mixingIndex + 1} de ${products.length}`)}
+
+              <div className="mb-8 rounded-3xl border border-emerald-100 bg-white p-8 shadow-lg">
+                <div
+                  className="mb-2 text-xs font-bold uppercase tracking-wider text-emerald-600"
+                  translate="no"
+                >
+                  ADICIONE AGORA:
+                </div>
+
+                <h2 className="mb-4 text-3xl font-black text-emerald-900" translate="no">
+                  {products[mixingIndex].name}
+                </h2>
+
+                <div className="mb-6 rounded-2xl border-2 border-emerald-100 bg-emerald-50 p-6">
+                  <div className="mb-1 text-sm font-bold text-emerald-600">
+                    Dose para o teste (0,3 ha):
+                  </div>
+                  <div className="text-4xl font-black text-emerald-600" translate="no">
+                    {formatVolume(
+                      products[mixingIndex].dosePerHa * JAR_TEST_HECTARES,
+                      products[mixingIndex].unit
+                    )}
                   </div>
                 </div>
-                <p className="text-emerald-800 font-bold flex items-center gap-2">
-                  <CheckCircle2 className="text-emerald-500 w-5 h-5" />
-                  Misture bem após adicionar.
+
+                <p className="flex items-center gap-2 font-bold text-emerald-800">
+                  <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+                  Misture bem após a adição.
                 </p>
               </div>
+
               <div className="flex gap-4">
-                <button onClick={prevStep} className="flex-1 py-4 font-bold text-emerald-700">Voltar</button>
-                <button onClick={nextStep} className="flex-[2] bg-emerald-600 text-white font-bold py-4 rounded-xl shadow-md">
+                <button onClick={prevStep} className="flex-1 py-4 font-bold text-emerald-700">
+                  Voltar
+                </button>
+                <button
+                  onClick={nextStep}
+                  className="flex-[2] rounded-xl bg-emerald-600 py-4 font-bold text-white shadow-md"
+                >
                   {mixingIndex === products.length - 1 ? 'Próximo' : 'Pronto'}
                 </button>
               </div>
@@ -435,122 +502,151 @@ export default function App() {
           )}
 
           {step === 'JAR_TEST_FINAL_WATER' && (
-            <motion.div 
+            <motion.div
               key="jar-final-water"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               className="flex-1"
             >
-              {renderHeader("Finalizar Calda", "Completar volume do teste")}
-              <div className="bg-white p-8 rounded-3xl shadow-lg border border-emerald-100 mb-8">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
-                    <Droplets className="text-emerald-600 w-6 h-6" />
+              {renderHeader('Finalizar calda', 'Completar o volume do teste')}
+
+              <div className="mb-8 rounded-3xl border border-emerald-100 bg-white p-8 shadow-lg">
+                <div className="mb-6 flex items-center gap-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100">
+                    <Droplets className="h-6 w-6 text-emerald-600" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg">Passo Final</h3>
-                    <p className="text-emerald-600 text-sm">Completar Água</p>
+                    <h3 className="text-lg font-bold">Passo final</h3>
+                    <p className="text-sm text-emerald-600">Completar com água</p>
                   </div>
                 </div>
-                <p className="text-xl font-bold text-emerald-900 mb-4">
+
+                <p className="mb-4 text-xl font-bold text-emerald-900">
                   Adicione os {formatVolume(jarTestWaterFinal)} restantes de água.
                 </p>
-                <p className="text-emerald-700 font-medium">
-                  (40% do volume de água total do teste).
+
+                <p className="font-medium text-emerald-700">
+                  (40% do volume total de água do teste).
                 </p>
               </div>
+
               <div className="flex gap-4">
-                <button onClick={() => setStep('JAR_TEST_MIXING')} className="flex-1 py-4 font-bold text-emerald-700">Voltar</button>
-                <button onClick={() => {
-                  setStep('STABILITY_CHECK');
-                  setTimerSeconds(300);
-                  setIsTimerRunning(true);
-                }} className="flex-[2] bg-emerald-600 text-white font-bold py-4 rounded-xl shadow-md">Iniciar Estabilidade</button>
+                <button
+                  onClick={() => setStep('JAR_TEST_MIXING')}
+                  className="flex-1 py-4 font-bold text-emerald-700"
+                >
+                  Voltar
+                </button>
+                <button
+                  onClick={() => {
+                    setStep('STABILITY_CHECK');
+                    setTimerSeconds(300);
+                    setIsTimerRunning(true);
+                  }}
+                  className="flex-[2] rounded-xl bg-emerald-600 py-4 font-bold text-white shadow-md"
+                >
+                  Iniciar estabilidade
+                </button>
               </div>
             </motion.div>
           )}
 
           {step === 'STABILITY_CHECK' && (
-            <motion.div 
+            <motion.div
               key="stability"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="flex-1"
             >
-              {renderHeader("Verificação", "Teste de Estabilidade")}
-              <div className="bg-white p-8 rounded-3xl shadow-lg border border-emerald-100 mb-8 text-center">
-                <div className="w-32 h-32 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-6 relative">
-                  <RotateCcw className={`text-emerald-200 w-24 h-24 ${isTimerRunning ? 'animate-spin-slow' : ''}`} />
+              {renderHeader('Verificação', 'Teste de estabilidade')}
+
+              <div className="mb-8 rounded-3xl border border-emerald-100 bg-white p-8 text-center shadow-lg">
+                <div className="relative mx-auto mb-6 flex h-32 w-32 items-center justify-center rounded-full bg-emerald-50">
+                  <RotateCcw
+                    className={`h-24 w-24 text-emerald-200 ${isTimerRunning ? 'animate-spin-slow' : ''}`}
+                  />
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-3xl font-black text-emerald-600 font-mono">
+                    <span className="font-mono text-3xl font-black text-emerald-600">
                       {formatTimer(timerSeconds)}
                     </span>
                   </div>
                 </div>
-                <h2 className="text-2xl font-bold text-emerald-900 mb-2">Aguarde 5 minutos</h2>
-                <p className="text-emerald-800 font-medium leading-relaxed mb-6">
-                  Se a calda permanecer homogênea e estável, a mistura está adequada para aplicação.
+
+                <h2 className="mb-2 text-2xl font-bold text-emerald-900">Aguarde 5 minutos</h2>
+
+                <p className="mb-6 font-medium leading-relaxed text-emerald-800">
+                  Se a calda permanecer homogênea e estável, a mistura estará adequada para
+                  aplicação.
                 </p>
-                
+
                 {!isTimerRunning && timerSeconds > 0 && (
-                  <button 
+                  <button
                     onClick={() => setIsTimerRunning(true)}
-                    className="bg-emerald-100 text-emerald-700 px-6 py-2 rounded-full font-bold text-sm hover:bg-emerald-200 transition-colors"
+                    className="rounded-full bg-emerald-100 px-6 py-2 text-sm font-bold text-emerald-700 transition-colors hover:bg-emerald-200"
                   >
-                    Iniciar Cronômetro
+                    Iniciar cronômetro
                   </button>
                 )}
+
                 {timerSeconds === 0 && (
-                  <div className="bg-emerald-600 text-white px-6 py-2 rounded-full font-bold text-sm animate-pulse">
-                    Tempo Esgotado! Verifique a calda.
+                  <div className="animate-pulse rounded-full bg-emerald-600 px-6 py-2 text-sm font-bold text-white">
+                    Tempo esgotado. Verifique a calda.
                   </div>
                 )}
               </div>
-              <p className="text-center font-bold text-emerald-900 mb-6">A calda permaneceu estável?</p>
+
+              <p className="mb-6 text-center font-bold text-emerald-900">
+                A calda permaneceu estável?
+              </p>
+
               <div className="grid gap-4">
-                <button 
+                <button
                   onClick={nextStep}
-                  className="w-full bg-emerald-600 text-white font-bold py-5 rounded-2xl shadow-md flex items-center justify-center gap-3"
+                  className="flex w-full items-center justify-center gap-3 rounded-2xl bg-emerald-600 py-5 font-bold text-white shadow-md"
                 >
-                  <CheckCircle2 className="w-6 h-6" />
+                  <CheckCircle2 className="h-6 w-6" />
                   Sim, permaneceu estável
                 </button>
-                <button 
+
+                <button
                   onClick={() => {
                     setStep('WATER_QUALITY_INFO');
                     setIsTimerRunning(false);
                   }}
-                  className="w-full bg-white border-2 border-rose-200 text-rose-600 font-bold py-5 rounded-2xl flex flex-col items-center justify-center"
+                  className="flex w-full flex-col items-center justify-center rounded-2xl border-2 border-rose-200 bg-white py-5 font-bold text-rose-600"
                 >
                   <div className="flex items-center gap-2">
-                    <AlertTriangle className="w-6 h-6" />
+                    <AlertTriangle className="h-6 w-6" />
                     Não permaneceu estável
                   </div>
-                  <span className="text-xs mt-1 font-medium opacity-80">Trocar água e refazer teste</span>
+                  <span className="mt-1 text-xs font-medium opacity-80">
+                    Troque a água e refaça o teste
+                  </span>
                 </button>
               </div>
             </motion.div>
           )}
 
           {step === 'TANK_VOLUME' && (
-            <motion.div 
+            <motion.div
               key="tank-volume"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               className="flex-1"
             >
-              {renderHeader("Volume do Tanque", "Informe a capacidade do seu misturador")}
-              
+              {renderHeader('Volume do tanque', 'Informe a capacidade do seu misturador')}
+
               {selectedMode === AppMode.DRONE && (
-                <div className="bg-amber-50 p-4 rounded-2xl border border-amber-100 mb-6 flex gap-3">
-                  <Info className="text-amber-600 w-6 h-6 flex-shrink-0" />
-                  <p className="text-amber-900 text-sm font-medium">
-                    <span className="font-bold">Atenção:</span> Para Drone, utilizaremos apenas 60% do volume para garantir agitação adequada.
+                <div className="mb-6 flex gap-3 rounded-2xl border border-amber-100 bg-amber-50 p-4">
+                  <Info className="h-6 w-6 flex-shrink-0 text-amber-600" />
+                  <p className="text-sm font-medium text-amber-900">
+                    <span className="font-bold">Atenção:</span> para aplicação com drone,
+                    utilizaremos apenas 60% do volume, para garantir agitação adequada.
                   </p>
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-4 mb-6">
+              <div className="mb-6 grid grid-cols-2 gap-4">
                 {[200, 400, 600].map((vol) => (
                   <button
                     key={vol}
@@ -558,17 +654,18 @@ export default function App() {
                       setTankVolume(vol);
                       setCustomVolume('');
                     }}
-                    className={`p-5 rounded-2xl font-bold text-xl transition-all border-2 ${
+                    className={`rounded-2xl border-2 p-5 text-xl font-bold transition-all ${
                       tankVolume === vol && !customVolume
-                        ? 'bg-emerald-600 border-emerald-600 text-white shadow-lg' 
-                        : 'bg-white border-emerald-100 text-emerald-900'
+                        ? 'border-emerald-600 bg-emerald-600 text-white shadow-lg'
+                        : 'border-emerald-100 bg-white text-emerald-900'
                     }`}
                   >
                     {vol} L
                   </button>
                 ))}
+
                 <div className="relative">
-                  <input 
+                  <input
                     type="number"
                     placeholder="Outro"
                     value={customVolume}
@@ -576,45 +673,53 @@ export default function App() {
                       setCustomVolume(e.target.value);
                       setTankVolume(Number(e.target.value) || 0);
                     }}
-                    className={`w-full p-5 rounded-2xl font-bold text-xl transition-all border-2 outline-none ${
+                    className={`w-full rounded-2xl border-2 p-5 text-xl font-bold outline-none transition-all ${
                       customVolume
-                        ? 'bg-emerald-600 border-emerald-600 text-white placeholder:text-emerald-200' 
-                        : 'bg-white border-emerald-100 text-emerald-900 placeholder:text-emerald-300'
+                        ? 'border-emerald-600 bg-emerald-600 text-white placeholder:text-emerald-200'
+                        : 'border-emerald-100 bg-white text-emerald-900 placeholder:text-emerald-300'
                     }`}
                   />
                 </div>
               </div>
 
-              <div className="bg-emerald-900 text-white p-6 rounded-3xl shadow-xl mb-8">
-                <div className="flex justify-between items-center mb-2 opacity-80 text-sm font-bold uppercase tracking-wider">
-                  Resumo da Aplicação
+              <div className="mb-8 rounded-3xl bg-emerald-900 p-6 text-white shadow-xl">
+                <div className="mb-2 flex items-center justify-between text-sm font-bold uppercase tracking-wider opacity-80">
+                  Resumo da aplicação
                 </div>
+
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span className="font-medium">Modo:</span>
                     <span className="font-bold">{selectedMode}</span>
                   </div>
+
                   <div className="flex justify-between">
                     <span className="font-medium">Vazão:</span>
                     <span className="font-bold">{flowRate} L/ha</span>
                   </div>
+
                   <div className="flex justify-between border-t border-emerald-800 pt-3">
-                    <span className="font-medium">Volume Útil:</span>
-                    <span className="font-bold text-xl text-emerald-400">{effectiveTankVolume} L</span>
+                    <span className="font-medium">Volume útil:</span>
+                    <span className="text-xl font-bold text-emerald-400">{effectiveTankVolume} L</span>
                   </div>
+
                   <div className="flex justify-between">
-                    <span className="font-medium">Área por Tanque:</span>
-                    <span className="font-bold text-xl text-emerald-400">{hectaresPerTank.toFixed(2)} ha</span>
+                    <span className="font-medium">Área por tanque:</span>
+                    <span className="text-xl font-bold text-emerald-400">
+                      {hectaresPerTank.toFixed(2)} ha
+                    </span>
                   </div>
                 </div>
               </div>
 
               <div className="flex gap-4">
-                <button onClick={prevStep} className="flex-1 py-4 font-bold text-emerald-700">Voltar</button>
-                <button 
+                <button onClick={prevStep} className="flex-1 py-4 font-bold text-emerald-700">
+                  Voltar
+                </button>
+                <button
                   disabled={tankVolume <= 0}
-                  onClick={nextStep} 
-                  className="flex-[2] bg-emerald-600 disabled:opacity-50 text-white font-bold py-4 rounded-xl shadow-md"
+                  onClick={nextStep}
+                  className="flex-[2] rounded-xl bg-emerald-600 py-4 font-bold text-white shadow-md disabled:opacity-50"
                 >
                   Continuar
                 </button>
@@ -623,19 +728,23 @@ export default function App() {
           )}
 
           {step === 'FULL_TANK_MIXING' && (
-            <motion.div 
+            <motion.div
               key={`full-mix-${mixingIndex}`}
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               className="flex-1"
             >
-              {renderHeader("Mistura do Tanque", `Produto ${mixingIndex + 1} de ${products.length}`)}
-              
+              {renderHeader('Mistura do tanque', `Produto ${mixingIndex + 1} de ${products.length}`)}
+
               {mixingIndex === 0 && (
-                <div className="bg-white p-8 rounded-3xl shadow-lg border border-emerald-100 mb-6">
-                   <div className="text-emerald-600 font-bold mb-2 uppercase tracking-wider text-xs">Passo 1:</div>
-                   <h2 className="text-2xl font-black text-emerald-900 mb-4">Adicionar 60% da Água</h2>
-                   <div className="bg-emerald-50 p-6 rounded-2xl border-2 border-emerald-100">
+                <div className="mb-6 rounded-3xl border border-emerald-100 bg-white p-8 shadow-lg">
+                  <div className="mb-2 text-xs font-bold uppercase tracking-wider text-emerald-600">
+                    Passo 1:
+                  </div>
+                  <h2 className="mb-4 text-2xl font-black text-emerald-900">
+                    Adicionar 60% da água
+                  </h2>
+                  <div className="rounded-2xl border-2 border-emerald-100 bg-emerald-50 p-6">
                     <div className="text-4xl font-black text-emerald-600">
                       {formatVolume(fullTankWaterInitial)}
                     </div>
@@ -643,24 +752,44 @@ export default function App() {
                 </div>
               )}
 
-              <div className="bg-white p-8 rounded-3xl shadow-lg border border-emerald-100 mb-8">
-                <div className="text-emerald-600 font-bold mb-2 uppercase tracking-wider text-xs">Adicione agora:</div>
-                <h2 className="text-3xl font-black text-emerald-900 mb-4">{products[mixingIndex].name}</h2>
-                <div className="bg-emerald-50 p-6 rounded-2xl border-2 border-emerald-100 mb-6">
-                  <div className="text-emerald-600 text-sm font-bold mb-1">Dose para o tanque total:</div>
-                  <div className="text-4xl font-black text-emerald-600">
-                    {formatVolume(products[mixingIndex].dosePerHa * hectaresPerTank, products[mixingIndex].unit)}
+              <div className="mb-8 rounded-3xl border border-emerald-100 bg-white p-8 shadow-lg">
+                <div
+                  className="mb-2 text-xs font-bold uppercase tracking-wider text-emerald-600"
+                  translate="no"
+                >
+                  ADICIONE AGORA:
+                </div>
+
+                <h2 className="mb-4 text-3xl font-black text-emerald-900" translate="no">
+                  {products[mixingIndex].name}
+                </h2>
+
+                <div className="mb-6 rounded-2xl border-2 border-emerald-100 bg-emerald-50 p-6">
+                  <div className="mb-1 text-sm font-bold text-emerald-600">
+                    Dose para o tanque completo:
+                  </div>
+                  <div className="text-4xl font-black text-emerald-600" translate="no">
+                    {formatVolume(
+                      products[mixingIndex].dosePerHa * hectaresPerTank,
+                      products[mixingIndex].unit
+                    )}
                   </div>
                 </div>
-                <p className="text-emerald-800 font-bold flex items-center gap-2">
-                  <CheckCircle2 className="text-emerald-500 w-5 h-5" />
-                  Mantenha agitação constante.
+
+                <p className="flex items-center gap-2 font-bold text-emerald-800">
+                  <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+                  Mantenha a agitação constante.
                 </p>
               </div>
 
               <div className="flex gap-4">
-                <button onClick={prevStep} className="flex-1 py-4 font-bold text-emerald-700">Voltar</button>
-                <button onClick={nextStep} className="flex-[2] bg-emerald-600 text-white font-bold py-4 rounded-xl shadow-md">
+                <button onClick={prevStep} className="flex-1 py-4 font-bold text-emerald-700">
+                  Voltar
+                </button>
+                <button
+                  onClick={nextStep}
+                  className="flex-[2] rounded-xl bg-emerald-600 py-4 font-bold text-white shadow-md"
+                >
                   {mixingIndex === products.length - 1 ? 'Próximo' : 'Pronto'}
                 </button>
               </div>
@@ -668,72 +797,90 @@ export default function App() {
           )}
 
           {step === 'FULL_TANK_FINAL_WATER' && (
-            <motion.div 
+            <motion.div
               key="tank-final-water"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               className="flex-1"
             >
-              {renderHeader("Finalizar Mistura", "Completar volume do tanque")}
-              <div className="bg-white p-8 rounded-3xl shadow-lg border border-emerald-100 mb-8">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
-                    <Droplets className="text-emerald-600 w-6 h-6" />
+              {renderHeader('Finalizar mistura', 'Completar o volume do tanque')}
+
+              <div className="mb-8 rounded-3xl border border-emerald-100 bg-white p-8 shadow-lg">
+                <div className="mb-6 flex items-center gap-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100">
+                    <Droplets className="h-6 w-6 text-emerald-600" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg">Passo Final</h3>
-                    <p className="text-emerald-600 text-sm">Completar Água</p>
+                    <h3 className="text-lg font-bold">Passo final</h3>
+                    <p className="text-sm text-emerald-600">Completar com água</p>
                   </div>
                 </div>
-                <p className="text-xl font-bold text-emerald-900 mb-4">
+
+                <p className="mb-4 text-xl font-bold text-emerald-900">
                   Adicione os {formatVolume(fullTankWaterFinal)} restantes de água.
                 </p>
-                <p className="text-emerald-700 font-medium">
-                  (40% do volume de água total do tanque).
+
+                <p className="font-medium text-emerald-700">
+                  (40% do volume total de água do tanque).
                 </p>
               </div>
+
               <div className="flex gap-4">
-                <button onClick={() => setStep('FULL_TANK_MIXING')} className="flex-1 py-4 font-bold text-emerald-700">Voltar</button>
-                <button onClick={() => setStep('FINAL')} className="flex-[2] bg-emerald-600 text-white font-bold py-4 rounded-xl shadow-md">Finalizar</button>
+                <button
+                  onClick={() => setStep('FULL_TANK_MIXING')}
+                  className="flex-1 py-4 font-bold text-emerald-700"
+                >
+                  Voltar
+                </button>
+                <button
+                  onClick={() => setStep('FINAL')}
+                  className="flex-[2] rounded-xl bg-emerald-600 py-4 font-bold text-white shadow-md"
+                >
+                  Finalizar
+                </button>
               </div>
             </motion.div>
           )}
 
           {step === 'FINAL' && (
-            <motion.div 
+            <motion.div
               key="final"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="flex-1 flex flex-col items-center justify-center text-center"
+              className="flex flex-1 flex-col items-center justify-center text-center"
             >
-              <div className="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center mb-8">
-                <CheckCircle2 className="text-emerald-600 w-16 h-16" />
+              <div className="mb-8 flex h-24 w-24 items-center justify-center rounded-full bg-emerald-100">
+                <CheckCircle2 className="h-16 w-16 text-emerald-600" />
               </div>
-              <h1 className="text-4xl font-black text-emerald-900 mb-4">Mistura Finalizada!</h1>
-              <p className="text-xl text-emerald-800 font-bold mb-8">
+
+              <h1 className="mb-4 text-4xl font-black text-emerald-900">Mistura finalizada!</h1>
+
+              <p className="mb-8 text-xl font-bold text-emerald-800">
                 Calda pronta para aplicação.
               </p>
-              <div className="bg-white p-6 rounded-3xl shadow-lg border border-emerald-100 mb-12 text-left w-full">
-                <h3 className="font-bold text-emerald-900 mb-2 flex items-center gap-2">
-                  <Info className="w-5 h-5 text-emerald-600" />
+
+              <div className="mb-12 w-full rounded-3xl border border-emerald-100 bg-white p-6 text-left shadow-lg">
+                <h3 className="mb-2 flex items-center gap-2 font-bold text-emerald-900">
+                  <Info className="h-5 w-5 text-emerald-600" />
                   Recomendações:
                 </h3>
-                <ul className="text-emerald-800 space-y-2 font-medium">
+
+                <ul className="space-y-2 font-medium text-emerald-800">
                   <li>• Complete com água até o volume final.</li>
-                  <li>• Mantenha agitação constante no tanque.</li>
+                  <li>• Mantenha a agitação constante no tanque.</li>
                   <li>• Siga as recomendações técnicas de segurança.</li>
                 </ul>
               </div>
-              <button 
+
+              <button
                 onClick={resetApp}
-                className="w-full bg-emerald-900 text-white font-bold py-5 rounded-2xl shadow-lg flex items-center justify-center gap-3 text-xl"
+                className="flex w-full items-center justify-center gap-3 rounded-2xl bg-emerald-900 py-5 text-xl font-bold text-white shadow-lg"
               >
-                Nova Aplicação
+                Nova aplicação
               </button>
             </motion.div>
           )}
         </AnimatePresence>
-
       </div>
 
       <style>{`
@@ -741,6 +888,7 @@ export default function App() {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }
         }
+
         .animate-spin-slow {
           animation: spin-slow 8s linear infinite;
         }
