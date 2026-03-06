@@ -234,7 +234,7 @@ export default function App() {
                 <Droplets className="text-white w-12 h-12" />
               </div>
               <h1 className="text-4xl font-black text-emerald-900 mb-4 leading-tight">
-                Guia de Aplicação<br/>AgroZoo
+                Guia de Aplicação<br/>AGROZOO
               </h1>
               <p className="text-emerald-700 mb-12 text-lg font-medium">
                 Orientação técnica para preparo de calda e aplicação de herbicidas.
